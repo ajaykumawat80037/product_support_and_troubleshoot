@@ -1,0 +1,315 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "Your name is Rudra and You are a Product Support & Troubleshooting AI Agent.\nYour tasks:\n\nWelcome 🙏 to our Service Centre Support! I'm here to help you with any Software, Laptop/PC, or Mobile issues.\n\n-First you ask category, issue customer email and ph. no. or name of customer  for complain register and feel the user info in google sheet\n- ask to user what is the issue \n- Understand user's problem clearly.\n- Ask only necessary follow-up questions.\n- Provide clear step-by-step troubleshooting.\n- Never give complex or confusing answers.\n- Act like a professional customer support agent.\n- Identify common product/software/hardware issues.\n- If missing information, ask short and clear questions.\n- If serious hardware issue, suggest service center.\n- Keep tone friendly, simple and helpful.\n\nIMPORTANT: When you collect customer information (name, email, phone), you MUST immediately use the Google Sheets tool to save this data. Call the tool with all the information you have collected.\n\n-Finally, you can also add the solution and status to the Google Sheet.\n\nAlways follow this structure:\n1. Problem Understanding\n2. Root Cause (Possible reason)\n3. Step-by-Step Solution\n4. Final Recommendation\n\n"
+        }
+      },
+      "id": "dc5f6c5a-5e87-4dd5-aa2e-1f4bd1efebed",
+      "name": "Product Support Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2272,
+        1728
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 10
+      },
+      "id": "85f020fc-6da2-4d39-8b90-1d2ab326db4f",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2336,
+        1952
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        1824
+      ],
+      "id": "072ebb84-1507-4814-9444-2d234f44eabc",
+      "name": "WhatsApp Trigger",
+      "webhookId": "f7976c78-b559-4d4f-aed2-e99d7af47229",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "rYdN3yEcB0bgz0g3",
+          "name": "WhatsApp OAuth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Welcome 🙏 to our Service Centre Support!\n\nI'm Rudra, your AI support assistant. I'm here to help you with any Software, Laptop/PC, or Mobile issues.\n\nHow can I assist you today?",
+        "options": {
+          "inputPlaceholder": "Describe your issue here...",
+          "subtitle": "Product Support & Troubleshooting"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        1984,
+        1632
+      ],
+      "id": "58da863b-4ef6-456e-b91b-6872b022ec86",
+      "name": "When chat message received",
+      "webhookId": "91eb2217-8cdb-4a97-8b41-1bcc1e55f1ca"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        1952
+      ],
+      "id": "ee93d11a-bfee-43e1-b0ec-31636bbf9bba",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8aTMD2UMRxPtAWxq",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "889082167622673",
+        "recipientPhoneNumber": "=+91 8003761598",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2672,
+        1728
+      ],
+      "id": "823d69c4-9688-4f25-afbe-4289775a300a",
+      "name": "Send message",
+      "webhookId": "41aa731d-86cb-482b-ad2f-8598a54ef5e9",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "K9QWq7r6QTOAM0MO",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1QzBa66ctmWaSEk04RN1qgbEBKi1MVcsTRLdCUO-xpmw",
+          "mode": "list",
+          "cachedResultName": "Complain Ragister ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QzBa66ctmWaSEk04RN1qgbEBKi1MVcsTRLdCUO-xpmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QzBa66ctmWaSEk04RN1qgbEBKi1MVcsTRLdCUO-xpmw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Name', ``, 'string') }}",
+            "Customer E-mail": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_E-mail', ``, 'string') }}",
+            "Customer Phone No.": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Phone_No_', ``, 'string') }}",
+            "Issue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue', ``, 'string') }}",
+            "Solution": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Solution', ``, 'string') }}",
+            "Date": "={{ $now.format('dd-MM-yyy') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer E-mail",
+              "displayName": "Customer E-mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Phone No.",
+              "displayName": "Customer Phone No.",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Issue",
+              "displayName": "Issue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2464,
+        1952
+      ],
+      "id": "1e2e4389-d61e-40fa-b840-aa1e20ad5505",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dCwi1RcWybuaPh94",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Product Support Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Product Support Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Product Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Product Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Product Support Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Product Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1fea9d473b9dfdec34123b8fe0f6850807758ea61ad2a4628d91a869105f6000"
+  }
+}
